@@ -66,7 +66,7 @@ Additionally, we will also explore the effect of context on sarcasm detection by
 \section{Literature Review}
 \subsection{Related Work}
 
-The experiment performed in Abu Farha et al., 2021 An experiment similar to what we are proposing to do using a BERT encoder has been done in the past \cite{abu-farha}, but it is different in that it also combines the features of sentiment analysis in the model, and is done in the Arabic language. This is slightly more complex than what we are proposing to do, but there is a lot of useful information about using BERT for a sarcasm task from this paper. We will also use n-grams for our experiment as n-grams are a common feature used in sentiment analysis tasks, and this paper has shown that sentiment analysis features are helpful for detecting sarcasm.
+An experiment similar to what we are proposing to do using a BERT encoder has been done in the past \cite{abu-farha}, but it is different in that it also combines the features of sentiment analysis in the model, and is done in the Arabic language. This is slightly more complex than what we are proposing to do, but there is a lot of useful information about using BERT for a sarcasm task from this paper. We will also use n-grams for our experiment as n-grams are a common feature used in sentiment analysis tasks, and this paper has shown that sentiment analysis features are helpful for detecting sarcasm.
 
 A summary of sarcasm and irony detection as well as a subtask of breaking down and specifying the type of sarcasm and irony is available for SemEval-2018 Task 3 \cite{van-hee-etal-2018-semeval}. Our task is similar to this but will only tackle the main task of detecting sarcasm without the sub classifications. This is because the results of the paper show that it is difficult to detect the specific type of sarcasm detected at this point. Instead, we will further investigate whether using models such as Bag of Words and tf-idf or n-grams will help improve the model's performance, as this paper only discussed the overall results of the top-performing teams for the task which mostly used deep learning techniques to perform the classifications. We will compare how using basic NLP techniques compare to using BERT.
 
@@ -75,7 +75,7 @@ There has been research on exploring the task of Sarcasm Detection with the help
 Sarcasm is challenging to label because intended sarcasm is not always the same as perceived sarcasm \cite{oprea}. Because of this, even hand-labeled datasets for sarcasm are likely to be noisy as readers may perceive a text in a way that does not agree with the author's intentions. Additionally, automatically tagging sarcastic tweets through certain keywords such as ``\#sarcasm'' is not effective because this has also been shown to be very noisy and this also fails to capture many types of sarcasm \cite{oprea}. Because of this, we have decided to use a dataset which contains sarcasm labels by the authors themselves.
 
 \subsection{Methods}
-We will use the aforementioned dataset for this task \cite{Ghosh-Muresan}, which contains 5000 datapoints, each containing the preceding comment and the potentially sarcastic response pulled from Twitter, as well as the ground truth label for whether the response is sarcastic or not.
+We will use the Twitter Data from \href{https://sites.google.com/view/figlang2020/}{FigLang 2020's Shared Task} dataset for this task \cite{Ghosh-Muresan}. This dataset contains 5000 datapoints, each containing the preceding comment and the potentially sarcastic response pulled from Twitter, as well as the ground truth label for whether the response is sarcastic or not.
 
 We plan to answer our research question by performing a series of experiments. Our first baseline experiment will be to use a model based on Bag Of Words along with tf-idf \cite{Salton:86} using the Naive Bayes classifier, which is a baseline also used in similar experiments in the past \cite{hazarika}. We will also experiment with a model based on n-grams and tf-idf. We will compare how these baseline models compare to a state-of-the-art deep learning BERT model \cite{devlin2019bert} for the same task. For each model, we will conduct two experiments: one with the preceding comment and the response, and one with just the response to see the impact context has on sarcasm detection.
 
@@ -92,7 +92,7 @@ We hope to gain insights about two main aspects:
 \end{itemize}
 By having one model that uses context, and another model that does not use context, we are able to determine if having context actually impacts the accuracy of our models.
 
-To evaluate the models, we will use the standard metrics such as accuracy, precision, and F1 score. 
+To evaluate the models, we will use the standard metrics such as accuracy, precision, and F1 score. However, we also intend to use more subjective metrics to gain deeper insights about the task at hand.
 
 To help visualize our results, we will have one figure that displays the words that show up most frequently in tweets that are categorized as sarcastic by our model, excluding stop words.
 We will have another figure that summarizes the differences in our models' performances with and without context, as well as using our baseline n-gram model against BERT.
