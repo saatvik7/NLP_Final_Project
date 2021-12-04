@@ -54,472 +54,54 @@
 \section{Introduction}
 
 \paragraph{} We propose the following Research Question: Given a dataset of a few thousand English language Tweets, how accurately can we predict whether or not a particular Tweet employs sarcasm?
-Furthermore, if a Tweet is sarcastic, how accurately can we predict which category of ironic speech the Tweet falls into?
+Furthermore, does the accuracy of our model improve if we train it on some context for the Tweet in question?
 
-The \href{https://edinburghnlp.inf.ed.ac.uk/workshops/SemEval2022/train.En.csv}{dataset} we intend to use for this task is a set of roughly 3500 Tweets from \href{https://sites.google.com/view/semeval2022-isarcasmeval}{SemEval2022's iSarcasmEval Task}. This dataset has labels denoting whether or not a Tweet is sarcastic, and if it is, then the dataset gives us the category of ironic speech (sarcasm, irony, satire, understatement, overstatement, and rhetorical question) the tweet falls into.
+The \href{https://github.com/EducationalTestingService/sarcasm/releases}{dataset} we intend to use for this task is a set of Twitter Data from \href{https://sites.google.com/view/figlang2020/}{FigLang 2020's Shared Task}. This dataset has the context for the tweet (the preceding comment), the potentially sarcastic response, and a label denoting whether or not a Tweet is sarcastic.
 
 To answer the Research Question, we propose to explore using models such as Bag of Words with tf-idf and n-grams with tf-idf, and then use classifiers such as NaiveBayes to train and test on the data. 
-We will also use Deep Learning based models such as BERT as used in \href{https://arxiv.org/pdf/2005.05814.pdf}{Ghosh and Muresan, 2020} for a very similar task but on a different dataset. Such models have proven to be very effective for sarcasm detection in the past (Ghost and Muresan, 2020).
+We will also use Deep Learning based models such as BERT \cite{devlin2019bert} as used in \cite{Ghosh-Muresan} for a very similar task but on a different dataset. Such models have proven to be very effective for sarcasm detection in the past \cite{Ghosh-Muresan}.
 Additionally, we will also explore the effect of context on sarcasm detection by providing the preceding text and the sarcastic response, and comparing the results of providing the preceding text to results without.
-To evaluate how well our models do, we can use standard metrics such as Precision, Recall, Accuracy, and most importantly F1 Scores.
-One thing to note about our dataset is that only half of the complete dataset is currently available, and there is no test data as of now. Hence, we will presumably have to either do cross validation on our training dataset or split it into training and test data to evaluate our models.
 
-\section{Related Work}
 
-The experiment performed in Abu Farha et al., 2021 is similar to what we are proposing to do in that they also used a BERT encoder, but it is different in that it also combines the features of sentiment analysis in the model, and is done in the Arabic language. This is slightly more complex than what we are proposing to do, but there is a lot of useful information about using BERT for a sarcasm task from this paper. We will also use n-grams for our experiment as n-grams are a common feature used in sentiment analysis tasks, and this paper has shown that sentiment analysis features are helpful for detecting sarcasm.
+\section{Literature Review}
+\subsection{Related Work}
 
-Van Hee et al., 2018 gives a summary of sarcasm and irony detection for the SemEval-2018 Task 3, as well as a subtask of breaking down and specifying the type of sarcasm and irony. Our task is similar to this but will only tackle the main task of detecting sarcasm without the sub classifications. This is because the results of the paper show that it is difficult to detect the specific type of sarcasm detected at this point. Instead, we will further investigate whether using models such as Bag of Words and tf-idf or n-grams will help improve the model's performance, as this paper only discussed the overall results of the top-performing teams for the task which mostly used deep learning techniques to perform the classifications. We will compare how using basic NLP techniques compares to using BERT.
+The experiment performed in Abu Farha et al., 2021 An experiment similar to what we are proposing to do using a BERT encoder has been done in the past \cite{abu-farha}, but it is different in that it also combines the features of sentiment analysis in the model, and is done in the Arabic language. This is slightly more complex than what we are proposing to do, but there is a lot of useful information about using BERT for a sarcasm task from this paper. We will also use n-grams for our experiment as n-grams are a common feature used in sentiment analysis tasks, and this paper has shown that sentiment analysis features are helpful for detecting sarcasm.
 
-Ghosh and Muresan, 2020 and Hazarika et al., 2018 have explored the task of Sarcasm Detection with the help of context. Ghosh and Muresan, 2020 discussed modeling conversation context in Twitter Data/Discussion Forums, and argues that using conversation context helps with sarcasm detection. The paper  makes use of models such as LSTMs with attention to understand context and make predictions. Hazarika et al., 2018 uses a CNN along with user profiling to provide the model with even more context on the corpora. The method we are proposing does not do user profiling, but we will explore whether the added context of the preceding comment before the sarcastic comment will help models better detect sarcasm.
+A summary of sarcasm and irony detection as well as a subtask of breaking down and specifying the type of sarcasm and irony is available for SemEval-2018 Task 3 \cite{van-hee-etal-2018-semeval}. Our task is similar to this but will only tackle the main task of detecting sarcasm without the sub classifications. This is because the results of the paper show that it is difficult to detect the specific type of sarcasm detected at this point. Instead, we will further investigate whether using models such as Bag of Words and tf-idf or n-grams will help improve the model's performance, as this paper only discussed the overall results of the top-performing teams for the task which mostly used deep learning techniques to perform the classifications. We will compare how using basic NLP techniques compare to using BERT.
 
-As discussed by Oprea and Magdy, 2020, sarcasm is challenging to label because intended sarcasm is not always the same as perceived sarcasm. Because of this, even hand-labeled datasets for sarcasm are likely to be noisy as readers may perceive a text in a way that does not agree with the author's intentions. Additionally, automatically tagging sarcastic tweets through certain keywords such as "#sarcasm" is not effective because this has also been shown to be very noisy and this also fails to capture many types of sarcasm (Oprea and Magdy, 2019). Because of this, we have decided to use a dataset which contains sarcasm labels by the authors themselves.
+There has been research on exploring the task of Sarcasm Detection with the help of context \cite{Ghosh-Muresan}, \cite{hazarika}. One paper discussed modeling conversation context in Twitter Data/Discussion Forums, and found that using conversation context helps with sarcasm detection \cite{Ghosh-Muresan}. The paper makes use of models such as LSTMs with attention to understand context and make predictions. A different paper uses a CNN along with user profiling to provide the model with more context on the corpora \cite{hazarika}. The method we are proposing does not do user profiling, but we will explore whether the added context of the preceding comment before the sarcastic comment will help models better detect sarcasm.
 
-\section{Methods}
-We plan to answer our research question by performing a series of experiments. Our first baseline experiment will be to use Bag Of Words (CITE HERE) along with tf-idf (CITE HERE)
+Sarcasm is challenging to label because intended sarcasm is not always the same as perceived sarcasm \cite{oprea}. Because of this, even hand-labeled datasets for sarcasm are likely to be noisy as readers may perceive a text in a way that does not agree with the author's intentions. Additionally, automatically tagging sarcastic tweets through certain keywords such as ``\#sarcasm'' is not effective because this has also been shown to be very noisy and this also fails to capture many types of sarcasm \cite{oprea}. Because of this, we have decided to use a dataset which contains sarcasm labels by the authors themselves.
 
-% \section{Electronically-available resources}
+\subsection{Methods}
+We will use the aforementioned dataset for this task \cite{Ghosh-Muresan}, which contains 5000 datapoints, each containing the preceding comment and the potentially sarcastic response pulled from Twitter, as well as the ground truth label for whether the response is sarcastic or not.
 
-% ACL provides this description and accompanying style files at
-% \begin{quote}
-% \url{https://2021.aclweb.org/files/acl-ijcnlp2021-templates.zip}
-% \end{quote}
-% We strongly recommend the use of these style files, which have been appropriately tailored for the ACL-IJCNLP 2021 proceedings. You can also start from the Overleaf template linked from the conference website.
+We plan to answer our research question by performing a series of experiments. Our first baseline experiment will be to use a model based on Bag Of Words along with tf-idf \cite{Salton:86} using the Naive Bayes classifier, which is a baseline also used in similar experiments in the past \cite{hazarika}. We will also experiment with a model based on n-grams and tf-idf. We will compare how these baseline models compare to a state-of-the-art deep learning BERT model \cite{devlin2019bert} for the same task. For each model, we will conduct two experiments: one with the preceding comment and the response, and one with just the response to see the impact context has on sarcasm detection.
 
-% \paragraph{\LaTeX-specific details:}
-% The templates include the \LaTeX2e{} source (\texttt{\small acl2021.tex}),
-% the \LaTeX2e{} style file used to format it (\texttt{\small acl2021.sty}),
-% an ACL bibliography style (\texttt{\small acl\_natbib.bst}),
-% an example bibliography (\texttt{\small acl2021.bib}),
-% and the bibliography for the ACL Anthology (\texttt{\small anthology.bib}).
+% BERT here
+Before we can perform any experiments or analysis, we need to process our data by splitting our training data into training and validation data. For our experiments, we decided to hold out 20\% of our training set as a validation set. After this, we convert our data into Tensors so that we can run models like BERT on it.
 
+For our deep learning model, we plan to use a pre-trained BERT model. For this process, we plan to use the pre-trained BERT models included with Pytorch's Transformer library. More specifically, we plan to use bert-base-cased and bert-base-uncased to compare how capitalization plays a role in detecting sarcasm. For each model, we will use the tokenizer shipped with the BERT model we are using. 
 
-% \section{Length of Submission}
-% \label{sec:length}
 
-% The conference accepts submissions of long papers and short papers. Long papers may consist of up to eight (8) pages of content plus unlimited pages for references and ethics/broader impact statement. Short papers may consist of up to four (4) pages of content, plus unlimited pages for references and ethics/broader impact statement. Upon acceptance, final versions of both long and short papers will be given one additional content page to address the reviewers' comments.
+We hope to gain insights about two main aspects: 
+\begin{itemize}
+  \item How does using context affect the accuracy of our model?
+  \item How does using each of the different models affect the accuracy of sarcasm detection?
+\end{itemize}
+By having one model that uses context, and another model that does not use context, we are able to determine if having context actually impacts the accuracy of our models.
 
-% For both long and short papers, all illustrations and tables that are part of the main text must be accommodated within these page limits, observing the formatting instructions given in the present document. 
-% \textbf{Papers that do not conform to the specified length and formatting requirements are subject to be rejected without review.}
+To evaluate the models, we will use the standard metrics such as accuracy, precision, and F1 score. 
 
-% The conference encourages the submission of additional material that is relevant to the reviewers but not an integral part of the paper.
-% There are two such types of material: appendices, which can be read, and non-readable supplementary materials, often data or code. 
-% Additional material must be submitted as separate files, and must adhere to the same anonymity guidelines as the main paper. Appendices should be no longer than 4 pages.
-% The paper must be self-contained: it is optional for reviewers to look at the supplementary material.
-% The paper should not refer, for further detail, to documents, code or data resources that are not available to the reviewers.
-% Refer to Section~\ref{sec:supplementary} for further information. 
+To help visualize our results, we will have one figure that displays the words that show up most frequently in tweets that are categorized as sarcastic by our model, excluding stop words.
+We will have another figure that summarizes the differences in our models' performances with and without context, as well as using our baseline n-gram model against BERT.
+We will also add a table to discuss certain testing examples for which our models had the worst performance, and try to analyze why our model didn't do well on those specific cases. We will also compare these results between models to see if there are certain features in some types of sarcasm that make them hard to detect in general or if there are certain areas in which a certain model is not effective at predicting.
 
-% Workshop chairs may have different rules for allowed length and whether supplemental material is welcome.
-% As always, the respective call for papers is the authoritative source.
+% What we're gonna plot, what our dataset is (break it down), metrics we're gonna use (not just the generic ones), Features we will use (and how this relates to previous work in the field)...
 
-
-% \section{Anonymity}
-% As reviewing will be double-blind, papers submitted for review should not include any author information (such as names or affiliations). Furthermore, self-references that reveal the author's identity, \emph{e.g.},
-% \begin{quote}
-% We previously showed \citep{Gusfield:97} \ldots
-% \end{quote}
-% should be avoided. Instead, use citations such as 
-% \begin{quote}
-% \citet{Gusfield:97} previously showed\ldots
-% \end{quote}
-% Please do not use anonymous citations and do not include acknowledgements.
-% \textbf{Papers that do not conform to these requirements may be rejected without review.}
-
-% Any preliminary non-archival versions of submitted papers should be listed in the submission form but not in the review version of the paper.
-% Reviewers are generally aware that authors may present preliminary versions of their work in other venues, but will not be provided the list of previous presentations from the submission form. 
-
-% Please do not include github links that reveal the authors' identities in your submission. If you feel it is important to include your source code, you can zip the code and submit it to softconf. 
-
-% Once a paper has been accepted to the conference, the camera-ready version of the paper should include the author's names and affiliations, and is allowed to use self-references and provide the related github link.
-
-
-% \paragraph{\LaTeX-specific details:}
-% For an anonymized submission, ensure that {\small\verb|\aclfinalcopy|} at the top of this document is commented out, and that you have filled in the paper ID number (assigned during the submission process on softconf) where {\small\verb|***|} appears in the {\small\verb|\def\aclpaperid{***}|} definition at the top of this document.
-% For a camera-ready submission, ensure that {\small\verb|\aclfinalcopy|} at the top of this document is not commented out.
-
-
-% \section{Multiple Submission Policy}
-
-% ACL-IJCNLP 2021 will not consider any paper that is under review in a journal or another conference at the time of submission, and submitted papers must not be submitted elsewhere during the ACL-IJCNLP 2021 review period. This policy covers all refereed and archival conferences and workshops (e.g., NAACL). The only exception is that a paper can be dual-submitted to both ACL-IJCNLP 2021 and an ACL-IJCNLP workshop. 
-
-% In addition, we will not consider any paper that overlaps significantly in content or results with papers that will be (or have been) published elsewhere. 
-% Authors submitting more than one paper to ACL-IJCNLP 2021 must ensure that their submissions do not overlap significantly ($>25$\%) with each other in content or results.
-
-% \section{Formatting Instructions}
-
-% Manuscripts must be in two-column format.
-% Exceptions to the two-column format include the title, authors' names and complete addresses, which must be centered at the top of the first page, and any full-width figures or tables (see the guidelines in Section~\ref{ssec:title-authors}).
-% \textbf{Type single-spaced.}
-% Start all pages directly under the top margin.
-% The manuscript should be printed single-sided and its length should not exceed the maximum page limit described in Section~\ref{sec:length}.
-% Pages should be numbered in the version submitted for review, but \textbf{pages should not be numbered in the camera-ready version}.
-
-% \paragraph{\LaTeX-specific details:}
-% The style files will generate page numbers when {\small\verb|\aclfinalcopy|} is commented out, and remove them otherwise.
-
-
-% \subsection{File Format}
-% \label{sect:pdf}
-
-% For the production of the electronic manuscript you must use Adobe's Portable Document Format (PDF).
-% Please make sure that your PDF file includes all the necessary fonts (especially tree diagrams, symbols, and fonts with Asian characters).
-% When you print or create the PDF file, there is usually an option in your printer setup to include none, all or just non-standard fonts.
-% Please make sure that you select the option of including ALL the fonts.
-% \textbf{Before sending it, test your PDF by printing it from a computer different from the one where it was created.}
-% Moreover, some word processors may generate very large PDF files, where each page is rendered as an image.
-% Such images may reproduce poorly.
-% In this case, try alternative ways to obtain the PDF.
-% One way on some systems is to install a driver for a postscript printer, send your document to the printer specifying ``Output to a file'', then convert the file to PDF.
-
-% It is of utmost importance to specify the \textbf{A4 format} (21 cm x 29.7 cm) when formatting the paper.
-% Print-outs of the PDF file on A4 paper should be identical to the hardcopy version.
-% If you cannot meet the above requirements about the production of your electronic submission, please contact the publication chairs as soon as possible.
-
-% \paragraph{\LaTeX-specific details:}
-% PDF files are usually produced from \LaTeX{} using the \texttt{\small pdflatex} command.
-% If your version of \LaTeX{} produces Postscript files, \texttt{\small ps2pdf} or \texttt{\small dvipdf} can convert these to PDF.
-% To ensure A4 format in \LaTeX, use the command {\small\verb|\special{papersize=210mm,297mm}|}
-% in the \LaTeX{} preamble (below the {\small\verb|\usepackage|} commands) and use \texttt{\small dvipdf} and/or \texttt{\small pdflatex}; or specify \texttt{\small -t a4} when working with \texttt{\small dvips}.
-
-% \subsection{Layout}
-% \label{ssec:layout}
-
-% Format manuscripts two columns to a page, in the manner these
-% instructions are formatted.
-% The exact dimensions for a page on A4 paper are:
-
-% \begin{itemize}
-% \item Left and right margins: 2.5 cm
-% \item Top margin: 2.5 cm
-% \item Bottom margin: 2.5 cm
-% \item Column width: 7.7 cm
-% \item Column height: 24.7 cm
-% \item Gap between columns: 0.6 cm
-% \end{itemize}
-
-% \noindent Papers should not be submitted on any other paper size.
-% If you cannot meet the above requirements about the production of your electronic submission, please contact the publication chairs above as soon as possible.
-
-% \subsection{Fonts}
-
-% For reasons of uniformity, Adobe's \textbf{Times Roman} font should be used.
-% If Times Roman is unavailable, you may use Times New Roman or \textbf{Computer Modern Roman}.
-
-% Table~\ref{font-table} specifies what font sizes and styles must be used for each type of text in the manuscript.
-
-% \begin{table}
-% \centering
-% \begin{tabular}{lrl}
-% \hline \textbf{Type of Text} & \textbf{Font Size} & \textbf{Style} \\ \hline
-% paper title & 15 pt & bold \\
-% author names & 12 pt & bold \\
-% author affiliation & 12 pt & \\
-% the word ``Abstract'' & 12 pt & bold \\
-% section titles & 12 pt & bold \\
-% subsection titles & 11 pt & bold \\
-% document text & 11 pt  &\\
-% captions & 10 pt & \\
-% abstract text & 10 pt & \\
-% bibliography & 10 pt & \\
-% footnotes & 9 pt & \\
-% \hline
-% \end{tabular}
-% \caption{\label{font-table} Font guide. }
-% \end{table}
-
-% \paragraph{\LaTeX-specific details:}
-% To use Times Roman in \LaTeX2e{}, put the following in the preamble:
-% \begin{quote}
-% \small
-% \begin{verbatim}
-% \usepackage{times}
-% \usepackage{latexsym}
-% \end{verbatim}
-% \end{quote}
-
-
-% \subsection{Ruler}
-% A printed ruler (line numbers in the left and right margins of the article) should be presented in the version submitted for review, so that reviewers may comment on particular lines in the paper without circumlocution.
-% The presence or absence of the ruler should not change the appearance of any other content on the page.
-% The camera ready copy should not contain a ruler.
-
-% \paragraph{Reviewers:}
-% note that the ruler measurements may not align well with lines in the paper -- this turns out to be very difficult to do well when the paper contains many figures and equations, and, when done, looks ugly.
-% In most cases one would expect that the approximate location will be adequate, although you can also use fractional references (\emph{e.g.}, this line ends at mark $295.5$).
-
-% \paragraph{\LaTeX-specific details:}
-% The style files will generate the ruler when {\small\verb|\aclfinalcopy|} is commented out, and remove it otherwise.
-
-% \subsection{Title and Authors}
-% \label{ssec:title-authors}
-
-% Center the title, author's name(s) and affiliation(s) across both columns.
-% Do not use footnotes for affiliations.
-% Place the title centered at the top of the first page, in a 15-point bold font.
-% Long titles should be typed on two lines without a blank line intervening.
-% Put the title 2.5 cm from the top of the page, followed by a blank line, then the author's names(s), and the affiliation on the following line.
-% Do not use only initials for given names (middle initials are allowed).
-% Do not format surnames in all capitals (\emph{e.g.}, use ``Mitchell'' not ``MITCHELL'').
-% Do not format title and section headings in all capitals except for proper names (such as ``BLEU'') that are
-% conventionally in all capitals.
-% The affiliation should contain the author's complete address, and if possible, an electronic mail address.
-
-% The title, author names and addresses should be completely identical to those entered to the electronical paper submission website in order to maintain the consistency of author information among all publications of the conference.
-% If they are different, the publication chairs may resolve the difference without consulting with you; so it is in your own interest to double-check that the information is consistent.
-
-% Start the body of the first page 7.5 cm from the top of the page.
-% \textbf{Even in the anonymous version of the paper, you should maintain space for names and addresses so that they will fit in the final (accepted) version.}
-
-
-% \subsection{Abstract}
-% Use two-column format when you begin the abstract.
-% Type the abstract at the beginning of the first column.
-% The width of the abstract text should be smaller than the
-% width of the columns for the text in the body of the paper by 0.6 cm on each side.
-% Center the word \textbf{Abstract} in a 12 point bold font above the body of the abstract.
-% The abstract should be a concise summary of the general thesis and conclusions of the paper.
-% It should be no longer than 200 words.
-% The abstract text should be in 10 point font.
-
-% \subsection{Text}
-% Begin typing the main body of the text immediately after the abstract, observing the two-column format as shown in the present document.
-
-% Indent 0.4 cm when starting a new paragraph.
-
-% \subsection{Sections}
-
-% Format section and subsection headings in the style shown on the present document.
-% Use numbered sections (Arabic numerals) to facilitate cross references.
-% Number subsections with the section number and the subsection number separated by a dot, in Arabic numerals.
-
-% \subsection{Footnotes}
-% Put footnotes at the bottom of the page and use 9 point font.
-% They may be numbered or referred to by asterisks or other symbols.\footnote{This is how a footnote should appear.}
-% Footnotes should be separated from the text by a line.\footnote{Note the line separating the footnotes from the text.}
-
-% \subsection{Graphics}
-
-% Place figures, tables, and photographs in the paper near where they are first discussed, rather than at the end, if possible.
-% Wide illustrations may run across both columns.
-% Color is allowed, but adhere to Section~\ref{ssec:accessibility}'s guidelines on accessibility.
-
-% \paragraph{Captions:}
-% Provide a caption for every illustration; number each one sequentially in the form:
-% ``Figure 1. Caption of the Figure.''
-% ``Table 1. Caption of the Table.''
-% Type the captions of the figures and tables below the body, using 10 point text.
-% Captions should be placed below illustrations.
-% Captions that are one line are centered (see Table~\ref{font-table}).
-% Captions longer than one line are left-aligned (see Table~\ref{tab:accents}).
-
-% \begin{table}
-% \centering
-% \begin{tabular}{lc}
-% \hline
-% \textbf{Command} & \textbf{Output}\\
-% \hline
-% \verb|{\"a}| & {\"a} \\
-% \verb|{\^e}| & {\^e} \\
-% \verb|{\`i}| & {\`i} \\ 
-% \verb|{\.I}| & {\.I} \\ 
-% \verb|{\o}| & {\o} \\
-% \verb|{\'u}| & {\'u}  \\ 
-% \verb|{\aa}| & {\aa}  \\\hline
-% \end{tabular}
-% \begin{tabular}{lc}
-% \hline
-% \textbf{Command} & \textbf{Output}\\
-% \hline
-% \verb|{\c c}| & {\c c} \\ 
-% \verb|{\u g}| & {\u g} \\ 
-% \verb|{\l}| & {\l} \\ 
-% \verb|{\~n}| & {\~n} \\ 
-% \verb|{\H o}| & {\H o} \\ 
-% \verb|{\v r}| & {\v r} \\ 
-% \verb|{\ss}| & {\ss} \\
-% \hline
-% \end{tabular}
-% \caption{Example commands for accented characters, to be used in, \emph{e.g.}, \BibTeX\ names.}\label{tab:accents}
-% \end{table}
-
-% \paragraph{\LaTeX-specific details:}
-% The style files are compatible with the caption and subcaption packages; do not add optional arguments.
-% \textbf{Do not override the default caption sizes.}
-
-
-% \subsection{Hyperlinks}
-% Within-document and external hyperlinks are indicated with Dark Blue text, Color Hex \#000099.
-
-% \subsection{Citations}
-% Citations within the text appear in parentheses as~\citep{Gusfield:97} or, if the author's name appears in the text itself, as \citet{Gusfield:97}.
-% Append lowercase letters to the year in cases of ambiguities.  
-% Treat double authors as in~\citep{Aho:72}, but write as in~\citep{Chandra:81} when more than two authors are involved. Collapse multiple citations as in~\citep{Gusfield:97,Aho:72}. 
-
-% Refrain from using full citations as sentence constituents.
-% Instead of
-% \begin{quote}
-%   ``\citep{Gusfield:97} showed that ...''
-% \end{quote}
-% write
-% \begin{quote}
-% ``\citet{Gusfield:97} showed that ...''
-% \end{quote}
-
-% \begin{table*}
-% \centering
-% \begin{tabular}{lll}
-% \hline
-% \textbf{Output} & \textbf{natbib command} & \textbf{Old ACL-style command}\\
-% \hline
-% \citep{Gusfield:97} & \small\verb|\citep| & \small\verb|\cite| \\
-% \citealp{Gusfield:97} & \small\verb|\citealp| & no equivalent \\
-% \citet{Gusfield:97} & \small\verb|\citet| & \small\verb|\newcite| \\
-% \citeyearpar{Gusfield:97} & \small\verb|\citeyearpar| & \small\verb|\shortcite| \\
-% \hline
-% \end{tabular}
-% \caption{\label{citation-guide}
-% Citation commands supported by the style file.
-% The style is based on the natbib package and supports all natbib citation commands.
-% It also supports commands defined in previous ACL style files for compatibility.
-% }
-% \end{table*}
-
-% \paragraph{\LaTeX-specific details:}
-% Table~\ref{citation-guide} shows the syntax supported by the style files.
-% We encourage you to use the natbib styles.
-% You can use the command {\small\verb|\citet|} (cite in text) to get ``author (year)'' citations as in \citet{Gusfield:97}.
-% You can use the command {\small\verb|\citep|} (cite in parentheses) to get ``(author, year)'' citations as in \citep{Gusfield:97}.
-% You can use the command {\small\verb|\citealp|} (alternative cite without  parentheses) to get ``author year'' citations (which is useful for  using citations within parentheses, as in \citealp{Gusfield:97}).
-
-
-% \subsection{References}
-% Gather the full set of references together under the heading \textbf{References}; place the section before any Appendices. 
-% Arrange the references alphabetically by first author, rather than by order of occurrence in the text.
-
-% Provide as complete a citation as possible, using a consistent format, such as the one for \emph{Computational Linguistics\/} or the one in the  \emph{Publication Manual of the American 
-% Psychological Association\/}~\citep{APA:83}.
-% Use full names for authors, not just initials.
-
-% Submissions should accurately reference prior and related work, including code and data.
-% If a piece of prior work appeared in multiple venues, the version that appeared in a refereed, archival venue should be referenced.
-% If multiple versions of a piece of prior work exist, the one used by the authors should be referenced.
-% Authors should not rely on automated citation indices to provide accurate references for prior and related work.
-
-% The following text cites various types of articles so that the references section of the present document will include them.
-% \begin{itemize}
-% \item Example article in journal: \citep{Ando2005}.
-% \item Example article in proceedings, with location: \citep{borschinger-johnson-2011-particle}.
-% \item Example article in proceedings, without location: \citep{andrew2007scalable}.
-% \item Example arxiv paper: \citep{rasooli-tetrault-2015}. 
-% \end{itemize}
-
-
-% \paragraph{\LaTeX-specific details:}
-% The \LaTeX{} and Bib\TeX{} style files provided roughly follow the American Psychological Association format.
-% If your own bib file is named \texttt{\small acl2021.bib}, then placing the following before any appendices in your \LaTeX{}  file will generate the references section for you:
-% \begin{quote}\small
-% \verb|\bibliographystyle{acl_natbib}|\\
-% \verb|\bibliography{acl2021}|
-% \end{quote}
-
-% You can obtain the complete ACL Anthology as a Bib\TeX\ file from \url{https://aclweb.org/anthology/anthology.bib.gz}.
-% To include both the anthology and your own bib file, use the following instead of the above.
-% \begin{quote}\small
-% \verb|\bibliographystyle{acl_natbib}|\\
-% \verb|\bibliography{anthology,acl2021}|
-% \end{quote}
-
-
-% \subsection{Digital Object Identifiers}
-% As part of our work to make ACL materials more widely used and cited outside of our discipline, ACL has registered as a CrossRef member, as a registrant of Digital Object Identifiers (DOIs), the standard for registering permanent URNs for referencing scholarly materials.
-
-% All camera-ready references are required to contain the appropriate DOIs (or, as a second resort, the hyperlinked ACL Anthology Identifier) to all cited works.
-% Appropriate records should be found for most materials in the current ACL Anthology at \url{http://aclanthology.info/}.
-% As examples, we cite \citep{goodman-etal-2016-noise} to show you how papers with a DOI will appear in the bibliography.
-% We cite \citep{harper-2014-learning} to show how papers without a DOI but with an ACL Anthology Identifier will appear in the bibliography.
-
-% \paragraph{\LaTeX-specific details:}
-% Please ensure that you use Bib\TeX\ records that contain DOI or URLs for any of the ACL materials that you reference.
-% If the Bib\TeX{} file contains DOI fields, the paper title in the references section will appear as a hyperlink to the DOI, using the hyperref \LaTeX{} package.
-
-
-% \section{Supplementary Materials}
-% \label{sec:supplementary}
-
-% Supplementary material may report preprocessing decisions, model parameters, and other details necessary for the replication of the experiments reported in the paper.
-% Seemingly small preprocessing decisions can sometimes make a large difference in performance, so it is crucial to record such decisions to precisely characterize state-of-the-art methods. 
-
-% Nonetheless, supplementary material should be supplementary (rather than central) to the paper.
-% \textbf{Submissions that misuse the supplementary material may be rejected without review.}
-% Supplementary material may include explanations or details of proofs or derivations that do not fit into the paper, lists of
-% features or feature templates, sample inputs and outputs for a system, hyperparameter values, pseudo-code or source code, and data.
-
-% The paper should not rely on the supplementary material: while the paper may refer to and cite the supplementary material and the supplementary material will be available to the reviewers, they will not be asked to review the supplementary material.
-
-% Supplementary material can be uploaded as up to three separate files: a single appendix file in PDF format, a single .tgz or .zip archive containing software, and/or a single .tgz or .zip archive containing data.
-
-
-
-% \subsection{Appendices}
-% \label{sec:appendix}
-% Appendices are material that can be read, and include lemmas, formulas, proofs, and tables that are not critical to the reading and understanding of the paper. 
-% In the submitted version, appendices should be uploaded as a separate file. \textbf{Submissions which include appendices in the main paper will be rejected without review.} In the camera ready version, instead, appendices should directly follow the text and the references. In all cases, appendices should use the same format as the main paper. 
-
-% \paragraph{\LaTeX-specific details:}
-% In your camera ready version use {\small\verb|\appendix|} before any appendix section to switch the section numbering over to letters.
-
-% \subsection{Software and Data}
-% \label{sec:software_and_data}
-% Submissions may include software and data used in the work and described in the paper.
-% Any accompanying software and/or data should include licenses and documentation of research review as appropriate.
-
-% \section{Accessibility}
-% \label{ssec:accessibility}
-
-% In an effort to accommodate people who are color-blind (as well as those printing to paper), grayscale readability is strongly encouraged.
-% Color is not forbidden, but authors should ensure that tables and figures do not rely solely on color to convey critical distinctions.
-% A simple criterion:
-% All curves and points in your figures should be clearly distinguishable without color.
-
-% \section{Translation of non-English Terms}
-
-% It is also advised to supplement non-English characters and terms with appropriate transliterations and/or translations since not all readers understand all such characters and terms.
-% Inline transliteration or translation can be represented in the order of:
-% \begin{center}
-% \begin{tabular}{c}
-% original-form \\
-% transliteration \\
-% ``translation''
-% \end{tabular}
-% \end{center}
-
-% \section{\LaTeX{} Compilation Issues}
-% You may encounter the following error during compilation: 
-% \begin{quote}
-% {\small\verb|\pdfendlink|} ended up in different nesting level than {\small\verb|\pdfstartlink|}.
-% \end{quote}
-% This happens when \texttt{\small pdflatex} is used and a citation splits across a page boundary.
-% To fix this, the style file contains a patch consisting of two lines:
-% (1) {\small\verb|\RequirePackage{etoolbox}|} (line 455 in \texttt{\small acl2021.sty}), and
-% (2) A long line below (line 456 in \texttt{\small acl2021.sty}).
-
-% If you still encounter compilation issues even with the patch enabled, disable the patch by commenting the two lines, and then disable the \texttt{\small hyperref} package by loading the style file with the \texttt{\small nohyperref} option:
-
-% \noindent
-% {\small\verb|\usepackage[nohyperref]{acl2021}|}
-
-% \noindent
-% Then recompile, find the problematic citation, and rewrite the sentence containing the citation. (See, {\em e.g.}, \url{http://tug.org/errors.html})
-
-% \section*{Acknowledgments}
-
-% The acknowledgments should go immediately before the references. Do not number the acknowledgments section.
-% \textbf{Do not include this section when submitting your paper for review.}
-
-% \bibliographystyle{acl_natbib}
-% \bibliography{anthology,acl2021}
-
-%\appendix
-
+\bibliographystyle{acl_natbib}
+\bibliography{anthology,acl2021}
 
 
 \end{document}
