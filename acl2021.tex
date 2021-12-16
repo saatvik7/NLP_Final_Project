@@ -60,16 +60,15 @@
 \begin{abstract}
  The detection of figurative language devices such as sarcasm and irony is an increasingly important problem. We tackle this problem using the Twitter Dataset from the
  FigLang2020 Shared Task. Most previous tasks in this field tackle Sarcasm Detection using Deep Learning models like BERT, and also use context to improve results. This
- paper does not only that but also implements n-gram models both with and without context and discusses the differences in performances. Our results show that using BERT with
- Context gives us extremely promising results; however bigrams also do surprisingly well for a non-Deep Learning based model.
+ paper does not only that but also implements n-gram models both with and without context and discusses the differences in performance. Our results show that using BERT with
+ context gives us extremely promising results; however bigrams also do surprisingly well for a non-Deep Learning based model.
 \end{abstract}
 \section{Introduction}
 
 Sarcasm refers to a use of words to convey meaning opposite of what is mentioned by the speaker in a literal level. As such, being able to recognize the use of sarcasm is important in correctly identifying the speaker’s actual meanings, especially in context of applications like sentiment analysis. The classification task of sarcasm detection is considered a binary classification task, wherein the classifiers are provided as input utterances and possibly other contextual information to classify whether the utterance is sarcastic or non-sarcastic. 
 
 In particular, this paper will explore the question of how providing additional contextual conversational information to a sarcasm classification system affects the quality of the
-classification. The paper is driven by an existing shared task from the 2nd Workshop on Figurative Language Processing (FigLang 2020) at ACL 2020, and will use the Twitter Training
-Dataset provided in the shared task. ~\cite{Ghosh-Muresan} Nine models will be explored in this paper, three of which will consist of the BERT model transformer with a sequence
+classification. Nine models will be explored in this paper, three of which will consist of the BERT model transformer with a sequence
 classification linear layer on top (BertForSequenceClassification) ~\cite{devlin-etal-2019-bert}, and six of which will be based using a Naive Bayes classifier on n-grams features.
 
 Of the
@@ -91,7 +90,14 @@ The \href{https://github.com/EducationalTestingService/sarcasm/releases}{dataset
 \section{Literature Review}
 \subsection{Related Work}
 
-One initial approach for such a task was done through a semi-supervised classification algorithm that used pattern extraction, selection and matching and punctuation-based features for a kNN-like strategy. ~\cite{10.5555/1870568.1870582} The paper analyzed Amazon reviews and twitter data that used a gold standard through Mechanical Turk, where each utterance was fed into the classification algorithm for a classification task. Another approach was taken in a research conducted on irony and sentiment analysis focusing on a corpus of ironic similes, acting as sarcasm markers. ~\cite{Veale10detectingironic} It uses these markers to classify whether a simile is ironic or not depending on the lexical similarity between the terms and other factors like the frequency of its occurrence on the web. There were also other approaches that utilized word embeddings for the classification task, using distributional semantics methods and SVM classifiers. ~\cite{Ghosh2015SarcasticON} In this method, the authors target a particular word to determine whether the sense associated with the word matches the remaining words in the utterance. While these methods have been successful in producing results that are beyond baselines, some more recent authors have researched alternative approaches. 
+One initial approach for such a task was done through a semi-supervised classification algorithm that used pattern extraction, selection and matching and punctuation-based features
+for a kNN-like strategy \cite{10.5555/1870568.1870582}. The paper analyzed Amazon reviews and twitter data that used a gold standard through Mechanical Turk, where each utterance
+was fed into the classification algorithm for a classification task. Another approach was taken in a research conducted on irony and sentiment analysis focusing on a corpus of
+ironic similes, acting as sarcasm markers \cite{Veale10detectingironic}. It uses these markers to classify whether a simile is ironic or not depending on the lexical similarity
+between the terms and other factors like the frequency of its occurrence on the web. There were also other approaches that utilized word embeddings for the classification task,
+using distributional semantics methods and SVM classifiers. ~\cite{Ghosh2015SarcasticON} In this method, the authors target a particular word to determine whether the sense
+associated with the word matches the remaining words in the utterance. While these methods have been successful in producing results that are beyond baselines, some more recent
+authors have researched alternative approaches. 
 
 One motivation for an alternative approach may be the problem that sarcasm detection is difficult. A paper was produced that noted the difficulty in sarcasm detection without context, which further implies that computers probably would also require more contextual information for a good sarcasm detection algorithm. ~\cite{Wallace2014HumansRC} The paper found that people when annotating comments for sarcasm requests more contextual information than for non-sarcastic comments. As such, it would make sense that contextual information would be a valid tool for analysis in classifying sarcasm through algorithms. 
 
@@ -111,12 +117,12 @@ We will further investigate how traditional models such as Bag of Words or n-gra
 
 \subsection{Methods}
 The paper is driven by an existing shared task from the 2nd Workshop on Figurative Language Processing (FigLang 2020) at ACL 2020, and will use the Twitter Training Dataset
-provided in the shared task. ~\cite{Ghosh-Muresan} The Twitter Training Dataset consists of a series of 5000 tweets that were machine-tagged to be sarcastic if they contained the hashtags ``\#sarcasm'' or ``\#sarcastic''.  Each tweet in the dataset is separated into “response” utterances and “context” utterances. The “response” utterances correspond
+provided in the shared task \cite{Ghosh-Muresan}. The Twitter Training Dataset consists of a series of 5000 tweets that were machine-tagged to be sarcastic if they contained the hashtags ``\#sarcasm'' or ``\#sarcastic''.  Each tweet in the dataset is separated into “response” utterances and “context” utterances. The “response” utterances correspond
 to the actual utterances to be classified: the potentially sarcastic comment, while the “context” utterances are previous twitter posts to which the “response” utterance responded to. 
 
-For the non-sarcastic utterances, sentiment tweets are used proposed in related work ~\cite{Ghosh-Muresan}, with sentiments with hashtags like \#happy, \#love, \#sad, \#hate, etc. The authors mentions that sentiment utterances were used since classifying sarcastic utterances against sentiment utterances is a harder task due to the nature of how many sarcastic utterances also contain sentiment terms.
-
-For the data to be used for the model, we first tokenized the corpora using the BertTokenizer in the pytorch-pretrained-bert library. The BertTokenizer is used to tokenize the texts in the data into index numbers in the BERT vocabulary to be used for both the BERT and n-gram models. For models with context, we first joined the context utterances to the response utterances before tokenizing. With the preprocess procedure finished, the data was first split upon training and validation data to be used for validation used in training.
+For the data to be used for the model, we first tokenized the corpora using the BertTokenizer in the pytorch-pretrained-bert library. The BertTokenizer is used to tokenize the
+texts in the data into index numbers in the BERT vocabulary to be used for both the BERT and n-gram models. For models with context, we first joined the context utterances to the
+response utterances before tokenizing. With the preprocess procedure finished, the data was first split upon training and validation data of sizes 4000 and 1000 respectively.
 
 BERT-based models in this paper are using BertForSequenceClassification ~\cite{devlin-etal-2019-bert}, after the data is converted into tokens using the tokenizer, the array of indexes were padded or truncated to match the maximum sequence length, which for
 this experiment was determined to be 128. Attention masks are then created for each data to also be used for BERT. 
@@ -136,7 +142,7 @@ twitter dataset, where the “response” utterance and “context” utterance 
 non-matching sentiments may suggest sarcastic within the “response” utterance. This approach is inspired by past works that discussed the connection between sarcasm and sentiment
 analysis. ~\cite{Veale10detectingironic}
 
-For each of the six n-gram based models, we will have 2 models each for unigrams, bigrams, and trigrams. One with just the "response utterances", and one with the ``context'' and
+For each of the six n-gram based models, we will have 2 models each for unigrams, bigrams, and trigrams. One with just the ``response'' utterances, and one with the ``context'' and
 ``response'' utterances merged. 
 
 We hope to gain insights about two main aspects: 
@@ -147,19 +153,13 @@ We hope to gain insights about two main aspects:
   \item Is sentiment analysis alone effective for detecting sarcasm?
 \end{itemize}
 
-By having models that use context, and similar models that do not use context, we are able to determine if having context impacts the accuracy of our models. These sets of models will provide us with enough information to allow us to analyze the impact of different lengths of n-grams, impact of context, impact of sentiment analysis, and the difference between traditional n-gram models and BERT models for the task of sarcasm detection.
-
-Our first baseline experiment will be to use a model based on Bag Of Words along with tf-idf \cite{Salton:86} using the Naive Bayes classifier, which is a baseline also used in similar experiments in the past \cite{hazarika}. We will also experiment with a model based on n-grams and tf-idf. We will compare how these baseline models compare to a state-of-the-art deep learning BERT model \cite{devlin-etal-2019-bert} for the same task. For each model, we will conduct two experiments: one with the preceding comment and the response, and one with just the response to see the impact context has on sarcasm detection.
+By having models that use context and similar models that do not use context, we are able to determine if having context impacts the accuracy of our models. These sets of models will provide us with enough information to allow us to analyze the impact of different lengths of n-grams, impact of context, impact of sentiment analysis, and the difference between traditional n-gram models and BERT models for the task of sarcasm detection.
 
 Each of the nine models are then evaluated through testing on a validation dataset of 1000 datapoints. Each outcome of the classification algorithm will be compared with the gold labels, to compute F1 score and accuracy for each model. 
 
-To help visualize our results, we will have one figure that displays the words that show up most frequently in tweets that are categorized as sarcastic by our model, excluding stop words.
-We will have another figure that summarizes the differences in our models' performances with and without context, as well as using our baseline n-gram model against BERT.
-We will also add a table to discuss certain testing examples for which our models had the worst performance, and try to analyze why our model didn't do well on those specific cases. We will also compare these results between models to see if there are certain features in some types of sarcasm that make them hard to detect in general or if there are certain areas in which a certain model is not effective at predicting.
-
 % What we're gonna plot, what our dataset is (break it down), metrics we're gonna use (not just the generic ones), Features we will use (and how this relates to previous work in
 % the field)...
-\section{Results}
+\section{Results and Discussion}
 The performance of each of the predictor models were evaluated on a test set of 1000 data points, which were randomly separated from the training set in the beginning of the
 experiment. The test set was relatively balanced with 495 sarcastic and 505 non-sarcastic data points. 
 
@@ -219,36 +219,41 @@ Context + Response model did the best with a high value for each of the 4 evalua
 other two. Broadly speaking, it makes sense that the two BERT models that were trained specifically on the sarcasm task did well, since they can be thought to properly capture the
 language structures of the model through the pre-trained BERT model, and was further trained using the BERT sequence transformer for the specific task. The context not only is more
 information to be used for the classification, but also matches the results of \cite{Wallace2014HumansRC} wherein they showed how context is crucial information even for humans in
-sarcasm detection. As for the sentiment analysis, the relatively poor performance could potentially be from either that sentiment analysis isn’t a great predictor tool for sarcasm,
-or that the IMDB dataset on which the setiment analysis predictor was trained on did not match well with the twitter data that was used for the task. To explore further, more specific
-analysis on examples where the predictors disagreed in their prediction will be analyzed.
+sarcasm detection.
 
-
-Looking at the Bag of Words/Collocational Features (Bigrams, Trigrams) models that we used, we see from Table~\ref{table:bowContext} and Table~\ref{table:bowNoContext} that Bigrams trained with Context did the best
-out of all the n-gram models. 
-
-Additionally, while sentiment analysis alone may not be enough to effectively classify texts as sarcastic or not, it may be effective when combined with other features. Currently,
-we are tagging responses as sarcastic if the sentiment of the response does not match the sentiment of the context and not taking into account other factors. In the future, we can try to incorporate the features of sentiment analysis with other models such as our main
-BERT-based model and even n-grams based ones to see if this would improve its performance.
-
-We found that adding context did not significantly improve any of the models and made the unigram model significantly worse, dropping the F1 score from 0.67 to 0.54. This makes
+As for the sentiment analysis, the relatively poor performance could potentially be from either that sentiment analysis isn’t a great predictor tool for sarcasm,
+or that the IMDB dataset on which the sentiment analysis predictor was trained on did not match well with the twitter data that was used for the task. This would make sense as the
+types of text on Twitter and in movies are different enough to the point where this could make the sentiment classification inaccurate.
+\par Looking at the Bag of Words/Collocational Features (unigrams, bigrams, trigrams) models that we used, we see from Table~\ref{table:bowContext} and Table~\ref{table:bowNoContext}
+that bigrams overall did the best of all the n-gram models, and that context did not have a significant impact on the models' performances with the exception of unigrams. We found that adding context did not significantly improve any of the models, only improving the bigram model slightly and worsening the trigram model slightly. It did, however, make the unigram model significantly worse, dropping the F1 score from 0.67 to 0.54. This makes
 sense as when combining the context and the response, our n-gram based models did not distinguish between n-grams that originated from the context and the response. As the context
 is usually not sarcastic, adding n-grams from this to a potentially sarcastic set of n-grams could confuse the model and lead to worse results. This is especially true for unigrams
 which analyze single words, and would require certain words to be classified as sarcastic words or non sarcastic ones. This is not as significant for bigrams and trigrams, likely
-because these models also account for word order more than unigrams and thus would be able to better understand the role of the context n-grams. To make this distinction even
-clearer, we could also tag n-grams originating from the context and the response differently so that our models are able to tell them apart in the future.
+because these models also account for word order more than unigrams and thus would be able to better understand the role of the context n-grams. 
+
+\section{Future Work}
+
+While sentiment analysis alone may not be enough to effectively classify texts as sarcastic or not, it may be effective when combined with other features. Currently,
+we are tagging responses as sarcastic if the sentiment of the response does not match the sentiment of the context and not taking into account other factors. In the future, we can
+try to incorporate the features of sentiment analysis with other models such as our main BERT-based model and even n-grams based ones to see if this would improve its performance.
+
+As mentioned previously, we believe that a weakness of our traditional n-gram based models is that they are unable to distinguish between n-grams that originate from the
+``context'' utterance and the ``response'' utterance.  To make this distinction even clearer, we could also tag n-grams originating from the ``context'' and the ``response'' differently so that our models are able to tell them apart. 
 
 Another important point to mention is that while making our n-gram models we did not remove stop words or punctuation while tokenizing the corpus. Removing stop words could
 potentially improve our n-gram results; however, as we did use tf-idf in our models it may not make a large difference. 
+
+We could also try weighing hashtags more heavily in our n-gram models as hashtags are distinct from normal text and are often used to share some kind of sentiment. Perhaps
+assigning a different weight to hashtag tokens could improve the model's performace.
 
 Furthermore, we should also discuss the possibility that the gold labels for our dataset may not be entirely accurate. As was mentioned in the Shared Task, these tags were machine
 labeled based on whether the tweets contained the hashtags ``\#sarcasm'' or ``\#sarcastic''. Tagging sarcasm this way is not always accurate, and has actually been shown to be a
 poor way of tagging for sarcasm \cite{opreaiSarcasm}. Additionally, this paper does not take into account the difference between perceived and intended sarcasm, which is an important
 distinction to make in sarcasm detection \cite{oprea}, as something can be perceived as sarcastic but not intended to be, or vice versa.
 
-
-
-
+We believe that an impactful use of Sarcasm Detection lies in helping people who are learning English or any other language for the first time. This is because Sarcasm is
+especially difficult to pick up on for non-native speakers of a language. Thus, if our model is packaged with a language translation software it could be very helpful. Furthermore,
+another possible application of our model could be to flag and remove potentially very sarcastic and demeaning comments from social media platforms.
 \bibliographystyle{acl_natbib}
 \bibliography{anthology,acl2021}
 
